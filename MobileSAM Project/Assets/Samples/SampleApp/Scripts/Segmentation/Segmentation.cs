@@ -13,7 +13,7 @@ namespace Sample
     public class Segmentation : MonoBehaviour
     {
         [SerializeField] private RawImage input_image;  
-        [SerializeField] private RawImage output_image; 
+        [SerializeField] public RawImage output_image; 
         [SerializeField] private ModelAsset encoder_asset;  
         [SerializeField] private ModelAsset decoder_asset;  
         [SerializeField, Range(0.0f, 1.0f)] private float alpha = 0.5f;  
@@ -42,7 +42,7 @@ namespace Sample
             colors = new List<Color>() { Color.clear, new Color(1.0f, 0.0f, 0.0f, alpha) };
             WebCamDevice[] devices = WebCamTexture.devices;
             this.input_image = input_image.GetComponent<RawImage>();
-            _webcamTexture = new WebCamTexture(devices[0].name, 1920, 1080, 30);
+            _webcamTexture = new WebCamTexture(devices[0].name, 1920, 1080, 60);
             this.input_image.texture = _webcamTexture;
             this.input_image.enabled = true;
             _webcamTexture.Pause();
@@ -136,21 +136,32 @@ namespace Sample
             {
                 DisplaySegmentationResult(indices_texture);
             }
-            Debug.Log("ポイント選択時のセグメンテーションが完了しました。");
         }
 
         private void DisplaySegmentationResult(Texture2D indices_texture)
         {
             var colorized_texture = Visualizer.ColorizeArea(indices_texture, colors);
-            if (output_image.texture == null)
-            {
-                output_image.color = Color.white;
-                output_image.texture = new Texture2D(indices_texture.width, indices_texture.height, TextureFormat.RGBA32, false);
-            }
-            Graphics.CopyTexture(colorized_texture, output_image.texture);
+            
+            // RenderTextureを使用して出力サイズを一貫させる
+            RenderTexture rt = new RenderTexture(indices_texture.width, indices_texture.height, 32);
+            Graphics.Blit(colorized_texture, rt);
+
+            // RenderTextureからTexture2Dに変換して出力に使用
+            Texture2D outputTex = new Texture2D(rt.width, rt.height, TextureFormat.RGBA32, false);
+            RenderTexture.active = rt;
+            outputTex.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+            outputTex.Apply();
+
+            output_image.texture = outputTex;
+            output_image.color = Color.white;
+            
+            // Cleanup
+            RenderTexture.active = null;
+            rt.Release();
             Destroy(colorized_texture);
             Destroy(indices_texture);
         }
+        
 
         private void OnDestroy()
         {

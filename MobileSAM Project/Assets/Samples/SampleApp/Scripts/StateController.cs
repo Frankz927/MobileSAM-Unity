@@ -28,7 +28,7 @@ namespace Dummy.StatePattern
     // セグメンテーション状態
     public class SegmentationState : IState
     {
-        private float countdownTime = 3.0f; // 3秒のカウントダウン
+        private float countdownTime = 10.0f; // 3秒のカウントダウン
         private IDisposable countdownSubscription;
         private Subject<Unit> countdownCompleteSubject = new Subject<Unit>();
         private IState m_nextState = null;
@@ -51,7 +51,7 @@ namespace Dummy.StatePattern
         public void OnStateBegin()
         {
             // ここで少し遅延を持たせてカメラを起動
-            Observable.Timer(TimeSpan.FromMilliseconds(50))
+            Observable.Timer(TimeSpan.FromMilliseconds(300))
                 .Subscribe(_ => Segmentation.instance.StartCam())
                 .AddTo(StateController.Instance);
             
@@ -61,7 +61,6 @@ namespace Dummy.StatePattern
                 .Subscribe(_ =>
                 {
                     Debug.Log("カウントダウン終了");
-                    Segmentation.instance.StopCam(); // カメラを停止
                     countdownCompleteSubject.OnNext(Unit.Default); // 完了を通知
                 });
         }
@@ -112,14 +111,17 @@ namespace Dummy.StatePattern
 
         public void Update(float deltaTime)
         {
-            // Returnキーで次のステートに移行
+            // ESCキーでSEGMENTATIONに戻る
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                StateController.Instance.SetState(new SegmentationState());
+            }
+
+            // ReturnキーでOutput用のRawImageの内容を2Dオブジェクト化する
             if (Input.GetKeyDown(KeyCode.Return))
             {
-                // 次のステートに移行
-                if (m_nextState != null)
-                {
-                    StateController.Instance.SetState(m_nextState);
-                }
+                // Output用のRawImageからセグメンテーションされた画像を取得
+                BlockingPhotos.Create2DObjectFromSegmentation(Segmentation.instance.output_image.texture);
             }
         }
 
