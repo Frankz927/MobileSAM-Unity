@@ -14,7 +14,7 @@ namespace Sample
 {
     public class Segmentation : MonoBehaviour
     {
-        [SerializeField] private RawImage input_image;  
+        [SerializeField] public RawImage input_image;  
         [SerializeField] public RawImage output_image; 
         [SerializeField] private ModelAsset encoder_asset;  
         [SerializeField] private ModelAsset decoder_asset;  

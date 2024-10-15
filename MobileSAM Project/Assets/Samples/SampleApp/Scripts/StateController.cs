@@ -116,7 +116,14 @@ namespace Dummy.StatePattern
             if (Input.GetKeyDown(KeyCode.Return))
             {
                 // Output用のRawImageからセグメンテーションされた画像を取得
-                BlockingPhotos.Create2DObjectFromSegmentation(Segmentation.instance.output_image.texture);
+                StateController.Instance.lastDroppedGameObject = BlockingPhotos.Create2DObjectFromSegmentation(Segmentation.instance.output_image.texture);
+                if (StateController.Instance.lastDroppedGameObject != null)
+                {
+                    Debug.Log("ちゃんと代入されてる");
+                }
+                Segmentation.instance.output_image.color = Color.clear;
+                Segmentation.instance.input_image.color = Color.clear;
+                StateController.Instance.SetState(m_nextState);
             }
         }
 
@@ -131,33 +138,35 @@ namespace Dummy.StatePattern
     {
         private Transform targetObject;
         private IState m_nextState = null;
+        private ObjectManager objectManager;
+        private float moveSpeed = 5f;
 
         public StateType GetCurrentState { get; } = StateType.MOVE;
 
-        public MoveState(Transform obj)
+        public MoveState()
         {
-            targetObject = obj;
+            
         }
 
         public void OnStateBegin()
         {
             Debug.Log("オブジェクト移動開始");
+            if (StateController.Instance.lastDroppedGameObject != null)
+            {
+                Debug.Log("ちゃんと代入されてる");
+            }
+            else
+            {
+                Debug.LogError("StateController.Instance.lastDroppedGameObjectがNull");
+            }
         }
 
         public void OnStateEnd() {}
 
         public void Update(float deltaTime)
         {
-            float moveAmount = 0.1f; // 移動量を調整
-
-            if (Input.GetKey(KeyCode.LeftArrow))
-            {
-                targetObject.position += new Vector3(-moveAmount, 0, 0);
-            }
-            if (Input.GetKey(KeyCode.RightArrow))
-            {
-                targetObject.position += new Vector3(moveAmount, 0, 0);
-            }
+            float moveInput = Input.GetAxis("Horizontal");  // 左右キーでの移動
+            objectManager.MoveObject(StateController.Instance.lastDroppedGameObject,moveInput * moveSpeed);
 
             // Returnキーで次のステートに移行
             if (Input.GetKeyDown(KeyCode.Return))
@@ -181,12 +190,13 @@ namespace Dummy.StatePattern
     {
         private Transform targetObject;
         private IState m_nextState = null;
+        
 
         public StateType GetCurrentState { get; } = StateType.ROTATE;
 
-        public RotateState(Transform obj)
+        public RotateState()
         {
-            targetObject = obj;
+            
         }
 
         public void OnStateBegin()
@@ -261,7 +271,7 @@ namespace Dummy.StatePattern
     {
         public static StateController Instance { get; private set; }
         public ReactiveProperty<IState> currentState = new ReactiveProperty<IState>();
-        public GameObject targetObject; // 移動・回転させるオブジェクト
+        [HideInInspector] public GameObject lastDroppedGameObject;
         
         public SegmentationState segmentationState;
         private RetakeState retakeState;
@@ -279,8 +289,8 @@ namespace Dummy.StatePattern
             // 各状態を初期化
             segmentationState = new SegmentationState();
             retakeState = new RetakeState();
-            moveState = new MoveState(targetObject.transform);
-            rotateState = new RotateState(targetObject.transform);
+            moveState = new MoveState();
+            rotateState = new RotateState();
             fallState = new FallState();
 
             // 状態遷移を設定
