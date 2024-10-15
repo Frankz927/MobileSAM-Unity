@@ -1,11 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 using Unity.Sentis;
 using HoloLab.DNN.Segmentation;
 using Cysharp.Threading.Tasks;
+using UnityEngine.Profiling;
 
 
 namespace Sample
@@ -27,12 +29,20 @@ namespace Sample
         public WebCamTexture _webcamTexture;
 
         public static Segmentation instance;
+        
+        private CancellationTokenSource cancellationTokenSource;
 
         private void Awake()
         {
             if (instance == null)
             {
                 instance = this;
+            }
+            
+            if (model != null)
+            {
+                model.Dispose();
+                model = null;
             }
         }
 
@@ -52,6 +62,7 @@ namespace Sample
             var height = input_image.texture.height;
             selector = new Selector(rect_transform, width, height);
             selector.OnPointSelected += OnPointSelect;
+            
         }
 
         public void StartCam()
@@ -68,13 +79,27 @@ namespace Sample
                 StopCoroutine(segmentationCoroutine); // コルーチンを停止
             }
         }
+        
+        public void ResetModel()
+        {
+            model?.Dispose(); // モデルを一度破棄してリセット
+            model = new SegmentationModel_MobileSAM(encoder_asset, decoder_asset, BackendType.GPUCompute);
+        }
+        
+        public void CancelSegmentation()
+        {
+            cancellationTokenSource?.Cancel();
+        }
 
         public IEnumerator SegmentAtCenterWithInterval()
         {
-            while (true)
+            cancellationTokenSource = new CancellationTokenSource();
+            var token = cancellationTokenSource.Token;
+        
+            while (!token.IsCancellationRequested)
             {
                 yield return new WaitForSeconds(segmentationInterval);
-
+            
                 if (input_image.texture != null)
                 {
                     StartCoroutine(SegmentAtCenter());
@@ -107,7 +132,9 @@ namespace Sample
 
             Vector2 centerPoint = new Vector2(inputTexture.width / 2, inputTexture.height / 2);
             Texture2D indices_texture = null;
+            
             yield return StartCoroutine(model.Segment(inputTexture, centerPoint, (output) => indices_texture = output));
+            
             Destroy(result);
 
             if (indices_texture != null)
@@ -140,6 +167,7 @@ namespace Sample
 
         private void DisplaySegmentationResult(Texture2D indices_texture)
         {
+            
             var colorized_texture = Visualizer.ColorizeArea(indices_texture, colors);
             
             // RenderTextureを使用して出力サイズを一貫させる
@@ -160,6 +188,8 @@ namespace Sample
             rt.Release();
             Destroy(colorized_texture);
             Destroy(indices_texture);
+            
+            
         }
         
 
@@ -170,6 +200,7 @@ namespace Sample
 
             selector?.Dispose();
             selector = null;
+            
         }
     }
 }

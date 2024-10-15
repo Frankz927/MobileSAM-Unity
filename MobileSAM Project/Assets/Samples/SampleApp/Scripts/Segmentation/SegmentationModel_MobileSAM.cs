@@ -476,7 +476,7 @@ namespace HoloLab.DNN.Segmentation
 
             // release tensors
             image_embeddings?.Dispose();
-            masks?.Dispose();
+            // masks?.Dispose();
 
             return_action(masks_texture);
         }

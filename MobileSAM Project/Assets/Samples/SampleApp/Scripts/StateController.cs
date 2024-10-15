@@ -28,7 +28,7 @@ namespace Dummy.StatePattern
     // セグメンテーション状態
     public class SegmentationState : IState
     {
-        private float countdownTime = 10.0f; // 3秒のカウントダウン
+        private float countdownTime = 5.0f;
         private IDisposable countdownSubscription;
         private Subject<Unit> countdownCompleteSubject = new Subject<Unit>();
         private IState m_nextState = null;
@@ -37,6 +37,7 @@ namespace Dummy.StatePattern
         
         public SegmentationState()
         {
+            // m_nextState = retakeState;
             countdownCompleteSubject
                 .Subscribe(_ =>
                 {
@@ -50,8 +51,11 @@ namespace Dummy.StatePattern
         
         public void OnStateBegin()
         {
+            // セグメンテーションを初期化
+            // Segmentation.instance.ResetModel();
+            
             // ここで少し遅延を持たせてカメラを起動
-            Observable.Timer(TimeSpan.FromMilliseconds(300))
+            Observable.Timer(TimeSpan.FromMilliseconds(200))
                 .Subscribe(_ => Segmentation.instance.StartCam())
                 .AddTo(StateController.Instance);
             
@@ -69,24 +73,17 @@ namespace Dummy.StatePattern
         {
             Debug.Log("セグメンテーション終了");
             // 必要に応じて後処理を行う
-            Segmentation.instance.StopCam(); // Webカメラを停止
+            Segmentation.instance.StopCam();
+            Segmentation.instance.CancelSegmentation();
         }
 
         public void Update(float deltaTime)
         {
-            // ReturnキーでRETAKEまたは次のステートに移行
-            if (Input.GetKeyDown(KeyCode.Return))
-            {
-                // 次のステートに移行
-                if (m_nextState != null)
-                {
-                    StateController.Instance.SetState(m_nextState);
-                }
-            }
+           
         }
 
         public void SetNextState(IState nextState)
-        {
+        {   
             m_nextState = nextState;
         }
     }
@@ -100,13 +97,11 @@ namespace Dummy.StatePattern
 
         public void OnStateBegin()
         {
-            Debug.Log("再撮影状態開始");
             // 再撮影処理のための関数を呼び出す
         }
 
         public void OnStateEnd()
         {
-            Debug.Log("再撮影状態終了");
         }
 
         public void Update(float deltaTime)
@@ -114,7 +109,7 @@ namespace Dummy.StatePattern
             // ESCキーでSEGMENTATIONに戻る
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                StateController.Instance.SetState(new SegmentationState());
+                StateController.Instance.SetState(StateController.Instance.segmentationState);
             }
 
             // ReturnキーでOutput用のRawImageの内容を2Dオブジェクト化する
@@ -265,9 +260,14 @@ namespace Dummy.StatePattern
     public class StateController : MonoBehaviour
     {
         public static StateController Instance { get; private set; }
-
         public ReactiveProperty<IState> currentState = new ReactiveProperty<IState>();
         public GameObject targetObject; // 移動・回転させるオブジェクト
+        
+        public SegmentationState segmentationState;
+        private RetakeState retakeState;
+        private MoveState moveState;
+        private RotateState rotateState;
+        private FallState fallState;
 
         private void Awake()
         {
@@ -277,11 +277,11 @@ namespace Dummy.StatePattern
         private void Start()
         {
             // 各状態を初期化
-            var segmentationState = new SegmentationState();
-            var retakeState = new RetakeState();
-            var moveState = new MoveState(targetObject.transform);
-            var rotateState = new RotateState(targetObject.transform);
-            var fallState = new FallState();
+            segmentationState = new SegmentationState();
+            retakeState = new RetakeState();
+            moveState = new MoveState(targetObject.transform);
+            rotateState = new RotateState(targetObject.transform);
+            fallState = new FallState();
 
             // 状態遷移を設定
             segmentationState.SetNextState(retakeState);
