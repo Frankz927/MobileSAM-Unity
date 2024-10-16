@@ -54,5 +54,13 @@ public class ObjectManager : MonoBehaviour
     {
         boundaryX = stageTransform.localScale.x / 2f;  // プラットフォームのスケールに基づいた移動範囲を更新
     }
+    
+    public void ApplyGravity(GameObject target)
+    {
+        Rigidbody2D rb = target.AddComponent<Rigidbody2D>();
+        rb.gravityScale = 1.0f;
+        Judgment.Instance.AddTrackedRigidbody(rb);
+    }
+
 
 }

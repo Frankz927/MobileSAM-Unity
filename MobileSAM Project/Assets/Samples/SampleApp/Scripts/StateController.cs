@@ -2,6 +2,8 @@ using System;
 using Sample;
 using UnityEngine;
 using UniRx;
+using Unity.VisualScripting;
+using Unit = UniRx.Unit;
 
 namespace Dummy.StatePattern
 {
@@ -28,7 +30,7 @@ namespace Dummy.StatePattern
     // セグメンテーション状態
     public class SegmentationState : IState
     {
-        private float countdownTime = 10.0f;
+        private float countdownTime = 5.0f;
         private IDisposable countdownSubscription;
         private Subject<Unit> countdownCompleteSubject = new Subject<Unit>();
         private IState m_nextState = null;
@@ -41,7 +43,7 @@ namespace Dummy.StatePattern
             countdownCompleteSubject
                 .Subscribe(_ =>
                 {
-                    if (m_nextState != null)
+                    if (!System.Object.ReferenceEquals(m_nextState, null))
                     {
                         StateController.Instance.SetState(m_nextState);
                     }
@@ -52,10 +54,13 @@ namespace Dummy.StatePattern
         public void OnStateBegin()
         {
             // セグメンテーションを初期化
-            // Segmentation.instance.ResetModel();
+            Segmentation.instance.ResetModel();
+            
+            Segmentation.instance.output_image.color = Color.white;
+            Segmentation.instance.input_image.color = Color.white;
             
             // ここで少し遅延を持たせてカメラを起動
-            Observable.Timer(TimeSpan.FromMilliseconds(200))
+            Observable.Timer(TimeSpan.FromMilliseconds(100))
                 .Subscribe(_ => Segmentation.instance.StartCam())
                 .AddTo(StateController.Instance);
             
@@ -117,8 +122,6 @@ namespace Dummy.StatePattern
             {
                 // Output用のRawImageからセグメンテーションされた画像を取得
                 StateController.Instance.lastDroppedGameObject = BlockingPhotos.Create2DObjectFromSegmentation(Segmentation.instance.output_image.texture);
-                Segmentation.instance.output_image.color = Color.clear;
-                Segmentation.instance.input_image.color = Color.clear;
                 StateController.Instance.SetState(m_nextState);
             }
         }
@@ -146,6 +149,8 @@ namespace Dummy.StatePattern
         public void OnStateBegin()
         {
             Debug.Log("オブジェクト移動開始");
+            Segmentation.instance.output_image.color = Color.clear;
+            Segmentation.instance.input_image.color = Color.clear;
         }
 
         public void OnStateEnd() {}
@@ -159,7 +164,7 @@ namespace Dummy.StatePattern
             if (Input.GetKeyDown(KeyCode.Return))
             {
                 // 次のステートに移行
-                if (m_nextState != null)
+                if (!System.Object.ReferenceEquals(m_nextState, null))
                 {
                     StateController.Instance.SetState(m_nextState);
                 }
@@ -210,7 +215,7 @@ namespace Dummy.StatePattern
             if (Input.GetKeyDown(KeyCode.Return))
             {
                 // 次のステートに移行
-                if (m_nextState != null)
+                if (!System.Object.ReferenceEquals(m_nextState, null))
                 {
                     StateController.Instance.SetState(m_nextState);
                 }
@@ -227,19 +232,27 @@ namespace Dummy.StatePattern
     public class FallState : IState
     {
         private IState m_nextState = null;
-
         public StateType GetCurrentState { get; } = StateType.FALL;
+        public bool isStable;
 
         public void OnStateBegin()
         {
             Debug.Log("オブジェクト落下開始");
+            ObjectManager.Instance.ApplyGravity(StateController.Instance.lastDroppedGameObject);
+            Judgment.Instance.StartMonitoring();
         }
 
-        public void OnStateEnd() {}
+        public void OnStateEnd()
+        {
+            // 最後においたオブジェクトのy座標とスポーン地点との比較 -> カメラの座標の変更
+        }
 
         public void Update(float deltaTime)
         {
-            
+            if (Judgment.Instance.IsStable())
+            {
+                StateController.Instance.SetState(m_nextState);
+            }
         }
 
         public void SetNextState(IState nextState)
@@ -286,7 +299,7 @@ namespace Dummy.StatePattern
 
             // 状態が変わったときにOnStateBeginを呼び出す
             currentState
-                .Where(state => state != null)
+                .Where(state => !System.Object.ReferenceEquals(state, null))
                 .Subscribe(state =>
                 {
                     state.OnStateBegin();
@@ -297,7 +310,7 @@ namespace Dummy.StatePattern
         private void Update()
         {
             // 現在の状態のUpdateメソッドを実行
-            if (currentState.Value != null)
+            if (!System.Object.ReferenceEquals(currentState.Value, null))
             {
                 currentState.Value.Update(Time.deltaTime);
             }
@@ -305,7 +318,7 @@ namespace Dummy.StatePattern
 
         public void SetState(IState newState)
         {
-            if (currentState.Value != null)
+            if (!System.Object.ReferenceEquals(currentState.Value, null))
             {
                 currentState.Value.OnStateEnd();
             }

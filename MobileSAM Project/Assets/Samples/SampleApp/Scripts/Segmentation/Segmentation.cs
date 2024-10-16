@@ -60,7 +60,6 @@ namespace Sample
             _webcamTexture = webcamTexture;
             input_image.texture = _webcamTexture;
             input_image.enabled = true;
-            StartCam();
         }
 
         public void StartCam()
