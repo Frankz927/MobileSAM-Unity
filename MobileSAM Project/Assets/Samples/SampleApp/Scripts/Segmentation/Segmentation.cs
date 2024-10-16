@@ -25,11 +25,9 @@ namespace Sample
         private Selector selector = null;
         private List<Color> colors;
         private Coroutine segmentationCoroutine;
-
-        public WebCamTexture _webcamTexture;
-
-        public static Segmentation instance;
         
+        public WebCamTexture _webcamTexture;
+        public static Segmentation instance;
         private CancellationTokenSource cancellationTokenSource;
 
         private void Awake()
@@ -50,19 +48,19 @@ namespace Sample
         {
             model = new SegmentationModel_MobileSAM(encoder_asset, decoder_asset, BackendType.GPUCompute);
             colors = new List<Color>() { Color.clear, new Color(1.0f, 0.0f, 0.0f, alpha) };
-            WebCamDevice[] devices = WebCamTexture.devices;
-            this.input_image = input_image.GetComponent<RawImage>();
-            _webcamTexture = new WebCamTexture(devices[0].name, 1920, 1080, 60);
-            this.input_image.texture = _webcamTexture;
-            this.input_image.enabled = true;
-            _webcamTexture.Pause();
-            
-            var rect_transform = input_image.GetComponent<RectTransform>();
-            var width = input_image.texture.width;
-            var height = input_image.texture.height;
-            selector = new Selector(rect_transform, width, height);
-            selector.OnPointSelected += OnPointSelect;
-            
+        }
+        
+        public void SetWebCamTexture(WebCamTexture webcamTexture)
+        {
+            if (_webcamTexture != null && _webcamTexture.isPlaying)
+            {
+                _webcamTexture.Stop();
+            }
+
+            _webcamTexture = webcamTexture;
+            input_image.texture = _webcamTexture;
+            input_image.enabled = true;
+            StartCam();
         }
 
         public void StartCam()

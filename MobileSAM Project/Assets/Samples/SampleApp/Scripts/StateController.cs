@@ -28,7 +28,7 @@ namespace Dummy.StatePattern
     // セグメンテーション状態
     public class SegmentationState : IState
     {
-        private float countdownTime = 5.0f;
+        private float countdownTime = 10.0f;
         private IDisposable countdownSubscription;
         private Subject<Unit> countdownCompleteSubject = new Subject<Unit>();
         private IState m_nextState = null;
@@ -117,10 +117,6 @@ namespace Dummy.StatePattern
             {
                 // Output用のRawImageからセグメンテーションされた画像を取得
                 StateController.Instance.lastDroppedGameObject = BlockingPhotos.Create2DObjectFromSegmentation(Segmentation.instance.output_image.texture);
-                if (StateController.Instance.lastDroppedGameObject != null)
-                {
-                    Debug.Log("ちゃんと代入されてる");
-                }
                 Segmentation.instance.output_image.color = Color.clear;
                 Segmentation.instance.input_image.color = Color.clear;
                 StateController.Instance.SetState(m_nextState);
@@ -138,7 +134,6 @@ namespace Dummy.StatePattern
     {
         private Transform targetObject;
         private IState m_nextState = null;
-        private ObjectManager objectManager;
         private float moveSpeed = 5f;
 
         public StateType GetCurrentState { get; } = StateType.MOVE;
@@ -151,22 +146,14 @@ namespace Dummy.StatePattern
         public void OnStateBegin()
         {
             Debug.Log("オブジェクト移動開始");
-            if (StateController.Instance.lastDroppedGameObject != null)
-            {
-                Debug.Log("ちゃんと代入されてる");
-            }
-            else
-            {
-                Debug.LogError("StateController.Instance.lastDroppedGameObjectがNull");
-            }
         }
 
         public void OnStateEnd() {}
 
         public void Update(float deltaTime)
         {
-            float moveInput = Input.GetAxis("Horizontal");  // 左右キーでの移動
-            objectManager.MoveObject(StateController.Instance.lastDroppedGameObject,moveInput * moveSpeed);
+            float moveInput = Input.GetAxis("Horizontal");
+            ObjectManager.Instance.MoveObject(StateController.Instance.lastDroppedGameObject,moveInput * moveSpeed);
 
             // Returnキーで次のステートに移行
             if (Input.GetKeyDown(KeyCode.Return))
@@ -212,11 +199,11 @@ namespace Dummy.StatePattern
 
             if (Input.GetKey(KeyCode.LeftArrow))
             {
-                targetObject.Rotate(0, -rotateAmount, 0);
+                ObjectManager.Instance.RotateObject(StateController.Instance.lastDroppedGameObject,30f,true);
             }
             if (Input.GetKey(KeyCode.RightArrow))
             {
-                targetObject.Rotate(0, rotateAmount, 0);
+                ObjectManager.Instance.RotateObject(StateController.Instance.lastDroppedGameObject,30f,false);
             }
 
             // Returnキーで次のステートに移行
@@ -246,19 +233,13 @@ namespace Dummy.StatePattern
         public void OnStateBegin()
         {
             Debug.Log("オブジェクト落下開始");
-            // Rigidbodyと当たり判定の設定
-            // Segmentation.cs内の関数を呼び出す
         }
 
         public void OnStateEnd() {}
 
         public void Update(float deltaTime)
         {
-            // ここでゲームオーバーの判定を行う
-            // if (GameObjectのy座標 < -3) { GameOver処理を実行 }
-
-            // すべてのオブジェクトが動かない場合、次のSEGMENTATIONに戻る
-            // if (全てのオブジェクトが動かない) { StateController.Instance.SetState(new SegmentationState()); }
+            
         }
 
         public void SetNextState(IState nextState)
