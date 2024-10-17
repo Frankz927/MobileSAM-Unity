@@ -185,10 +185,7 @@ namespace Sample
             rt.Release();
             Destroy(colorized_texture);
             Destroy(indices_texture);
-            
-            
         }
-        
 
         private void OnDestroy()
         {

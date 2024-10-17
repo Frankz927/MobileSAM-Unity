@@ -239,6 +239,10 @@ namespace Dummy.StatePattern
         {
             Debug.Log("オブジェクト落下開始");
             ObjectManager.Instance.ApplyGravity(StateController.Instance.lastDroppedGameObject);
+            foreach (var num in Judgment.trackedRigidbodies)
+            {
+                Debug.Log(Judgment.trackedRigidbodies);
+            }
             Judgment.Instance.StartMonitoring();
         }
 

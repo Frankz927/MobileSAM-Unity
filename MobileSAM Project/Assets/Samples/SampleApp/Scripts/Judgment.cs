@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class Judgment : MonoBehaviour
 {
-    private static List<Rigidbody2D> trackedRigidbodies = new List<Rigidbody2D>();
+    [HideInInspector] public static List<Rigidbody2D> trackedRigidbodies = new List<Rigidbody2D>();
     private bool isMonitoring = false;
     
     public static Judgment Instance { get; private set; }
@@ -36,12 +36,6 @@ public class Judgment : MonoBehaviour
                     {
                         ShowGameOverText();
                     }
-
-                    // ステージの安定性判定
-                    if (IsStable())
-                    {
-                        
-                    }
                 })
                 .AddTo(this);
 
@@ -69,7 +63,7 @@ public class Judgment : MonoBehaviour
     {
         foreach (var rb in trackedRigidbodies)
         {
-            if (rb.velocity.magnitude > 0)
+            if ((rb == null || rb.velocity.magnitude > 0))
             {
                 return false;
             }
