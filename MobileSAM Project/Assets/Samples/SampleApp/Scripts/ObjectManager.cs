@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 public class ObjectManager : MonoBehaviour
 {
@@ -59,7 +60,17 @@ public class ObjectManager : MonoBehaviour
     {
         Rigidbody2D rb = target.AddComponent<Rigidbody2D>();
         rb.gravityScale = 1.0f;
+        
+        // ApplyGravity が終わった後、モニタリングを遅延付きで開始する
+        StartMonitoringAfterDelay(rb);
+    }
+
+    private async void StartMonitoringAfterDelay(Rigidbody2D rb)
+    {
+        // 0.2秒の待機を入れてからモニタリングを開始
+        await UniTask.Delay(400);
         Judgment.Instance.AddTrackedRigidbody(rb);
+        Judgment.Instance.StartMonitoring();
     }
 
 

@@ -1,29 +1,40 @@
-using System;
+// Judgment.cs
 using System.Collections.Generic;
-using Dummy.StatePattern;
 using UniRx;
+using Cysharp.Threading.Tasks;
+using Dummy.StatePattern; // UniTask を使用するため
 using UnityEngine;
 
 public class Judgment : MonoBehaviour
 {
     [HideInInspector] public static List<Rigidbody2D> trackedRigidbodies = new List<Rigidbody2D>();
     private bool isMonitoring = false;
-    
+
     public static Judgment Instance { get; private set; }
 
     private void Awake()
     {
         Instance = this;
+        Application.quitting += SaveGameData;
     }
 
-    public void StartMonitoring()
+    public async void StartMonitoring()
     {
         Debug.Log("モニタリング開始");
+        
+
+        // 監視開始までの待機時間
+        const int ignoreInitialDelayMilliseconds = 100;
         isMonitoring = true;
 
         // Rigidbody2Dの動きを監視
         foreach (var rb in trackedRigidbodies)
         {
+            if (rb == null) continue;
+
+            // Rigidbody2Dの初期の動きを無視するための待機
+            await UniTask.Delay(ignoreInitialDelayMilliseconds);
+
             // Rigidbody2DのvelocityをReactivePropertyで監視
             var velocityProperty = new ReactiveProperty<Vector2>(rb.velocity);
 
@@ -61,13 +72,26 @@ public class Judgment : MonoBehaviour
 
     public bool IsStable()
     {
-        foreach (var rb in trackedRigidbodies)
+        if (isMonitoring)
         {
-            if ((rb == null || rb.velocity.magnitude > 0))
+            foreach (var rb in trackedRigidbodies)
             {
-                return false;
+                if (rb == null || rb.velocity.magnitude > 0)
+                {
+                    return false;
+                }
             }
+
+            Debug.Log("タワーは安定しています");
+            isMonitoring = false;
+            return true;
         }
-        return true;
+        else{
+            return false;
+        }
+    }
+    private void SaveGameData()
+    {
+        trackedRigidbodies.Clear();
     }
 }
