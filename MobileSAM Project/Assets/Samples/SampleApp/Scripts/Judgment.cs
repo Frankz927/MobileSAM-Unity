@@ -9,6 +9,7 @@ public class Judgment : MonoBehaviour
 {
     [HideInInspector] public static List<Rigidbody2D> trackedRigidbodies = new List<Rigidbody2D>();
     private bool isMonitoring = false;
+    private bool isGameOver;
 
     public static Judgment Instance { get; private set; }
 
@@ -16,6 +17,7 @@ public class Judgment : MonoBehaviour
     {
         Instance = this;
         Application.quitting += SaveGameData;
+        isGameOver = false;
     }
 
     public async void StartMonitoring()
@@ -43,9 +45,9 @@ public class Judgment : MonoBehaviour
                 .Subscribe(velocity =>
                 {
                     // ゲームオーバー判定
-                    if (rb.transform.position.y < -5)
+                    if (!isGameOver && rb.transform.position.y < -5)
                     {
-                        ShowGameOverText();
+                        GameOver();
                     }
                 })
                 .AddTo(this);
@@ -65,9 +67,11 @@ public class Judgment : MonoBehaviour
         }
     }
 
-    private void ShowGameOverText()
+    private void GameOver()
     {
-        Debug.Log("ゲームオーバー！");
+        isGameOver = true;
+        TowerDownloader.Instance.CaptureScreenshot();
+        //WindowsNativePrinter.Instance.PrintReceiptWithImage("Brother QL-700", "今回のゲームレシート", "Result.png");
     }
 
     public bool IsStable()
@@ -93,5 +97,6 @@ public class Judgment : MonoBehaviour
     private void SaveGameData()
     {
         trackedRigidbodies.Clear();
+        isGameOver = false;
     }
 }

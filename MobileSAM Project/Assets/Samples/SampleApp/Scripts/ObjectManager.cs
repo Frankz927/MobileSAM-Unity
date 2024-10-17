@@ -41,6 +41,7 @@ public class ObjectManager : MonoBehaviour
     {
         // テクスチャから2Dオブジェクトを生成するロジック
         GameObject obj = new GameObject("SegmentedObject");
+        obj.tag = "Target";
         
         if (texture is Texture2D texture2D)
         {
