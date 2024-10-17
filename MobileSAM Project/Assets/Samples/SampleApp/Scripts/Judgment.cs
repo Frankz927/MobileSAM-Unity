@@ -35,8 +35,8 @@ public class Judgment : MonoBehaviour
             // Rigidbody2Dの初期の動きを無視するための待機
             await UniTask.Delay(ignoreInitialDelayMilliseconds);
 
-            // Rigidbody2DのvelocityをReactivePropertyで監視
             var velocityProperty = new ReactiveProperty<Vector2>(rb.velocity);
+            // Rigidbody2DのvelocityをReactivePropertyで監視
 
             // Velocityの変更を監視
             velocityProperty

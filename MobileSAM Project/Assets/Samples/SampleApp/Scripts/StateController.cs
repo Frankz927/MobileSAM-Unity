@@ -121,7 +121,7 @@ namespace Dummy.StatePattern
             if (Input.GetKeyDown(KeyCode.Return))
             {
                 // Output用のRawImageからセグメンテーションされた画像を取得
-                StateController.Instance.lastDroppedGameObject = BlockingPhotos.Create2DObjectFromSegmentation(Segmentation.instance.output_image.texture);
+                StateController.Instance.lastDroppedGameObject = ObjectManager.Instance.Create2DObjectFromSegmentation(Segmentation.instance.output_image.texture);
                 StateController.Instance.SetState(m_nextState);
             }
         }
@@ -244,6 +244,7 @@ namespace Dummy.StatePattern
         public void OnStateEnd()
         {
             // 最後においたオブジェクトのy座標とスポーン地点との比較 -> カメラの座標の変更
+            ObjectManager.Instance.CameraTransformUpdate();
         }
 
         public void Update(float deltaTime)

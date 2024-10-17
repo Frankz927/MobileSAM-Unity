@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Sample;
 using UnityEngine;
 
-public class CameraManager : MonoBehaviour
+public class DeviceManager : MonoBehaviour
 {
     // カメラの名前リストを保持する変数
     public int selectedCameraIndex = 0;

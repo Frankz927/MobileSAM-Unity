@@ -1,13 +1,13 @@
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(CameraManager))]
-public class CameraManagerEditor : Editor
+[CustomEditor(typeof(DeviceManager))]
+public class DeviceManagerEditor : Editor
 {
     public override void OnInspectorGUI()
     {
         // CameraManagerのターゲットを取得
-        CameraManager cameraManager = (CameraManager)target;
+        DeviceManager cameraManager = (DeviceManager)target;
 
         // 利用可能なカメラデバイスを取得
         WebCamDevice[] availableCameras = WebCamTexture.devices;
