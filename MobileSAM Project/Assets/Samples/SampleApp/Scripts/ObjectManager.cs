@@ -16,7 +16,7 @@ public class ObjectManager : MonoBehaviour
     private Transform originalCameraTransform;
     private float boundaryX;
     private Vector3 respawnPosition;
-    [SerializeField] private float interval = 16f;
+    private float interval = 10f;
     
     private void Awake()
     {
@@ -34,6 +34,7 @@ public class ObjectManager : MonoBehaviour
     {
         UpdateBoundary();
         respawnPosition = new Vector3(0,20,0);
+        interval = 10f;
         originalCameraTransform = cameraTransform;
     }
     
@@ -107,7 +108,7 @@ public class ObjectManager : MonoBehaviour
 
     public void CameraTransformUpdate()
     {
-        Debug.Log("カメラとリスポーン地点をあげたよ");
+        Debug.Log("CameraTransformUpdateが呼ばれたよ");
     
         // タワーの一番上のオブジェクトを取得
         var topmostTransform = Judgment.trackedRigidbodies
@@ -116,20 +117,19 @@ public class ObjectManager : MonoBehaviour
             .OrderByDescending(t => t.position.y) // Y座標で降順ソート
             .FirstOrDefault(); // 最初の要素を取得（最も高いY座標のTransform）
         
-        Debug.Log("この中で一番高いブロックのy座標は、" + topmostTransform.position.y);
+        Debug.Log("このタワーの中で一番高いブロックのy座標は、" + topmostTransform.position.y);
 
         // タワーの一番上のオブジェクトのY座標を取得
         float lastObjY = topmostTransform.transform.position.y;
-        float averageScale = (topmostTransform.transform.localScale.x + topmostTransform.transform.localScale.y) / 2;
-        var intervalValue = Mathf.Abs(lastObjY - respawnPosition.y+ averageScale);
+        var intervalValue = Mathf.Abs(lastObjY - respawnPosition.y);
         Debug.Log("今回の変化量は、" + intervalValue);
 
         // 新しいリスポーン位置を計算
         if (topmostTransform.transform.position.y >= 7)
         {
-            respawnPosition.y += topmostTransform.transform.localScale.y + intervalValue;
+            respawnPosition.y += topmostTransform.transform.localScale.y + interval;
             Vector3 cameraPos = cameraTransform.position;
-            cameraPos.y = respawnPosition.y/1.5f;     
+            cameraPos.y = respawnPosition.y - 8;     
             cameraTransform.position = cameraPos;
         }
         else
