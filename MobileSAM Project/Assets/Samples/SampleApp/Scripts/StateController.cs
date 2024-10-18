@@ -55,7 +55,6 @@ namespace Dummy.StatePattern
         {
             // セグメンテーションを初期化
             Segmentation.instance.ResetModel();
-            
             Segmentation.instance.output_image.color = Color.white;
             Segmentation.instance.input_image.color = Color.white;
             
@@ -120,6 +119,7 @@ namespace Dummy.StatePattern
             // ReturnキーでOutput用のRawImageの内容を2Dオブジェクト化する
             if (Input.GetKeyDown(KeyCode.Return))
             {
+                Debug.Log("returnキーが呼ばれたよ");
                 // Output用のRawImageからセグメンテーションされた画像を取得
                 StateController.Instance.lastDroppedGameObject = ObjectManager.Instance.Create2DObjectFromSegmentation(Segmentation.instance.output_image.texture);
                 StateController.Instance.SetState(m_nextState);
@@ -137,7 +137,7 @@ namespace Dummy.StatePattern
     {
         private Transform targetObject;
         private IState m_nextState = null;
-        private float moveSpeed = 5f;
+        private float moveSpeed = 10f;
 
         public StateType GetCurrentState { get; } = StateType.MOVE;
 
@@ -153,7 +153,10 @@ namespace Dummy.StatePattern
             Segmentation.instance.input_image.color = Color.clear;
         }
 
-        public void OnStateEnd() {}
+        public void OnStateEnd()
+        {
+            
+        }
 
         public void Update(float deltaTime)
         {
@@ -204,11 +207,11 @@ namespace Dummy.StatePattern
 
             if (Input.GetKey(KeyCode.LeftArrow))
             {
-                ObjectManager.Instance.RotateObject(StateController.Instance.lastDroppedGameObject,30f,true);
+                ObjectManager.Instance.RotateObject(StateController.Instance.lastDroppedGameObject,50f,true);
             }
             if (Input.GetKey(KeyCode.RightArrow))
             {
-                ObjectManager.Instance.RotateObject(StateController.Instance.lastDroppedGameObject,30f,false);
+                ObjectManager.Instance.RotateObject(StateController.Instance.lastDroppedGameObject,50f,false);
             }
 
             // Returnキーで次のステートに移行

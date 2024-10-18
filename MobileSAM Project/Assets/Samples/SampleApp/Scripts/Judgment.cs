@@ -67,11 +67,17 @@ public class Judgment : MonoBehaviour
         }
     }
 
-    private void GameOver()
+    private async void GameOver()
     {
         isGameOver = true;
         TowerDownloader.Instance.CaptureScreenshot();
-        //WindowsNativePrinter.Instance.PrintReceiptWithImage("Brother QL-700", "今回のゲームレシート", "Result.png");
+        
+        // Rigidbody2Dの初期の動きを無視するための待機
+        await UniTask.Delay(1000);
+    
+        // 画像パスを設定してから印刷
+        WindowsNativePrinter.Instance.Init("testdata.png"); // ここで画像パスを設定
+        WindowsNativePrinter.Instance.PrintReceipt();
     }
 
     public bool IsStable()

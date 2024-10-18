@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Drawing.Printing;
 using System.IO;
 using UnityEngine;
-using Font = System.Drawing.Font;
 
 public class WindowsNativePrinter : MonoBehaviour
 {
@@ -40,6 +39,14 @@ public class WindowsNativePrinter : MonoBehaviour
         #else
             string path = Application.persistentDataPath;   // ビルド後
         #endif
+
+        // _imagePath が null の場合はエラーメッセージをログに記録
+        if (string.IsNullOrEmpty(_imagePath))
+        {
+            Debug.LogError("画像パスが設定されていません。Initメソッドを呼び出して画像パスを設定してください。");
+            return null;
+        }
+
         return Path.Combine(path, _imagePath);  // パスを結合して返す
     }
 
@@ -65,6 +72,14 @@ public class WindowsNativePrinter : MonoBehaviour
     public void PrintReceipt()
     {
         string filePath = GetImagePath();
+
+        // filePath が null の場合は印刷を中止
+        if (filePath == null)
+        {
+            Debug.LogError("印刷を中止します。画像パスが無効です。");
+            return;
+        }
+
         Bitmap bitmap = LoadImage(filePath);
 
         if (bitmap == null)
@@ -75,43 +90,28 @@ public class WindowsNativePrinter : MonoBehaviour
 
         PrintDocument pd = new PrintDocument();
         pd.PrinterSettings.PrinterName = _printerName;
-        pd.DefaultPageSettings.Landscape = true; // 横向きに設定
 
         pd.PrintPage += (sender, e) =>
         {
-            // ページの描画領域とDPIを取得
+            // レシート幅 62mm（DPIからピクセルに変換）
+            float labelWidthInMM = 62;
             float dpiX = e.Graphics.DpiX;
-            float dpiY = e.Graphics.DpiY;
+            float labelWidthInPixels = labelWidthInMM * dpiX / 25.4f;  // mmからピクセルへの変換 (25.4mm = 1 inch)
 
-            // 用紙サイズに収まるように画像をスケーリング
-            float printableWidth = e.PageBounds.Width;
-            float printableHeight = e.PageBounds.Height;
+            // 画像の比率を保持しながら、横幅がラベル幅に収まるようにスケーリング
+            float scaleFactor = labelWidthInPixels / bitmap.Width;
+            float scaledHeight = bitmap.Height * scaleFactor;
+            float scaledWidth = labelWidthInPixels;
 
-            // 画像を90度回転
-            bitmap.RotateFlip(RotateFlipType.Rotate90FlipNone);
+            bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
 
-            // 画像のスケーリング
-            float imageAspectRatio = (float)bitmap.Height / bitmap.Width;  // 高さと幅の比率を取得
-            float scaledWidth = printableHeight;  // 90度回転させたため、幅は高さに
-            float scaledHeight = scaledWidth * imageAspectRatio;  // 比率を元に高さを計算
+            // レシートの長さを調整 (高さに合わせる)
+            // ここでカスタム用紙サイズを設定する
+            PaperSize customPaperSize = new PaperSize("Custom", (int)scaledHeight, (int)scaledWidth);  // ミリ単位
+            pd.DefaultPageSettings.PaperSize = customPaperSize;
 
-            // スケーリングが用紙に収まるか確認
-            if (scaledHeight > printableWidth) // もし画像が用紙に収まらない場合
-            {
-                scaledHeight = printableWidth; // 高さを用紙に収まるように設定
-                scaledWidth = scaledHeight / imageAspectRatio; // 幅を再計算
-            }
-
-            // テキスト描画
-            string receiptText = "今回のゲームレシート";
-            Font font = new Font("Arial", 24);  // フォントサイズ調整
-            float textHeight = font.GetHeight(e.Graphics);
-            e.Graphics.DrawString(receiptText, font, Brushes.Black, new PointF(10, 10)); // 上部に描画
-
-            // 画像描画
-            float imageXPosition = (printableWidth - scaledWidth) / 2;  // 中央に配置
-            float imageYPosition = textHeight + 20; // テキストの下に配置
-            e.Graphics.DrawImage(bitmap, new RectangleF(imageXPosition, imageYPosition, scaledWidth, scaledHeight));
+            // 印刷範囲に画像を描画
+            e.Graphics.DrawImage(bitmap, 0, 0, scaledWidth / 3, scaledHeight);
         };
 
         try
@@ -131,7 +131,7 @@ public class WindowsNativePrinter : MonoBehaviour
 
     private void Start()
     {
-        Init("testdata.png");
-        PrintReceipt();  // 印刷テスト
+        Init("testdata.png"); // 初期画像パスを設定
+        //PrintReceipt();
     }
 }

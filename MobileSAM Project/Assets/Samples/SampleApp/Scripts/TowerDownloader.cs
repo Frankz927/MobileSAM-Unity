@@ -48,7 +48,7 @@ public class TowerDownloader : MonoBehaviour
         List<GameObject> validTargetObjects = new List<GameObject>();
         foreach (GameObject obj in allTargetObjects)
         {
-            if (obj.transform.position.y >= -4)
+            if (obj.transform.position.y >= -2)
             {
                 validTargetObjects.Add(obj);
             }
@@ -75,7 +75,7 @@ public class TowerDownloader : MonoBehaviour
         float maxYPosition = GetHighestYPosition(validTargetObjects.ToArray());
 
         // ステージの y 座標と最も高い y 座標の距離をカメラの高さとする
-        float newCameraHeight = (maxYPosition - stageYPosition) * 1.1f;;
+        float newCameraHeight = (maxYPosition + 10 - stageYPosition);;
 
         // カメラの中央を、ステージと最高ブロックの中間点に設定
         mainCamera.transform.position = new Vector3(
@@ -88,8 +88,9 @@ public class TowerDownloader : MonoBehaviour
         mainCamera.orthographicSize = newCameraHeight / 2.0f;
         
         // 横幅を DebugBar の長さに合わせる
-        float stageWidth = stage.GetComponent<Renderer>().bounds.size.x;
-        float aspectRatio = stageWidth / newCameraHeight;
+        float stageWidth = stage.GetComponent<Renderer>().bounds.size.x + 5;
+        Debug.Log(stageWidth);
+        float aspectRatio = stageWidth / (newCameraHeight);
         mainCamera.aspect = aspectRatio;
 
         // 透明な背景の設定
@@ -99,7 +100,7 @@ public class TowerDownloader : MonoBehaviour
         // RenderTexture を画面サイズに設定　
         RenderTexture renderTexture = new RenderTexture(
             Mathf.CeilToInt(stageWidth * 100),  // 横幅を DebugBar の横幅に調整
-            Screen.height,
+            Screen.height + 100,
             24
         );
         mainCamera.targetTexture = renderTexture;
