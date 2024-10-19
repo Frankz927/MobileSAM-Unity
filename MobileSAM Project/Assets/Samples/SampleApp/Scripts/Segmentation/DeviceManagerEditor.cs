@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
+#if UNITY_EDITOR
 [CustomEditor(typeof(DeviceManager))]
 public class DeviceManagerEditor : Editor
 {
@@ -40,3 +41,4 @@ public class DeviceManagerEditor : Editor
         DrawDefaultInspector();
     }
 }
+#endif
