@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using Sample;
 using UnityEngine;
 using UniRx;
 using Unity.VisualScripting;
+using UnityEngine.UI;
 using Unit = UniRx.Unit;
 
 namespace Dummy.StatePattern
@@ -53,25 +55,51 @@ namespace Dummy.StatePattern
         
         public void OnStateBegin()
         {
+            // SegmentationStateのUIを8秒間表示
+            StateUIManager.instance.ShowUIForState(GetCurrentState, false, 8f);
+    
             // セグメンテーションを初期化
             Segmentation.instance.ResetModel();
             Segmentation.instance.output_image.color = Color.white;
             Segmentation.instance.input_image.color = Color.white;
-            
-            // ここで少し遅延を持たせてカメラを起動
+    
+            // カメラを起動する処理（100ミリ秒遅延）
             Observable.Timer(TimeSpan.FromMilliseconds(100))
                 .Subscribe(_ => Segmentation.instance.StartCam())
                 .AddTo(StateController.Instance);
-            
-            // カウントダウンを開始し、3秒後にSubjectで完了を通知
-            countdownSubscription = Observable
-                .Timer(TimeSpan.FromSeconds(countdownTime))
+
+            // 8秒後にカウントダウンを開始
+            Observable.Timer(TimeSpan.FromSeconds(8))
                 .Subscribe(_ =>
                 {
-                    Debug.Log("カウントダウン終了");
-                    countdownCompleteSubject.OnNext(Unit.Default); // 完了を通知
-                });
+                    Debug.Log("UI表示が終了し、カウントダウンを開始");
+
+                    // カウントダウンの残り秒数を表示する処理
+                    float remainingTime = countdownTime;
+                    StateController.Instance.countdownText.text = remainingTime.ToString();
+
+                    // カウントダウンを進行させ、テキストに反映
+                    countdownSubscription = Observable
+                        .Interval(TimeSpan.FromSeconds(1))  // 1秒ごとにカウントダウンを進行
+                        .TakeWhile(_ => remainingTime > 0)  // 残り時間が0になるまでループ
+                        .Subscribe(_ =>
+                        {
+                            remainingTime--;
+                            StateController.Instance.countdownText.text = remainingTime.ToString();
+                    
+                            // 残り時間が0になったら完了を通知
+                            if (remainingTime <= 0)
+                            {
+                                StateController.Instance.countdownText.text = null;
+                                Debug.Log("カウントダウン終了");
+                                countdownCompleteSubject.OnNext(Unit.Default);  // 完了を通知
+                            }
+                        });
+                })
+                .AddTo(StateController.Instance);
         }
+
+
 
         public void OnStateEnd()
         {
@@ -102,6 +130,7 @@ namespace Dummy.StatePattern
         public void OnStateBegin()
         {
             // 再撮影処理のための関数を呼び出す
+            StateUIManager.instance.ShowUIForState(GetCurrentState,true,-1);
         }
 
         public void OnStateEnd()
@@ -151,6 +180,8 @@ namespace Dummy.StatePattern
             Debug.Log("オブジェクト移動開始");
             Segmentation.instance.output_image.color = Color.clear;
             Segmentation.instance.input_image.color = Color.clear;
+            
+            StateUIManager.instance.ShowUIForState(GetCurrentState,true,-1);
         }
 
         public void OnStateEnd()
@@ -197,6 +228,7 @@ namespace Dummy.StatePattern
         public void OnStateBegin()
         {
             Debug.Log("オブジェクト回転開始");
+            StateUIManager.instance.ShowUIForState(GetCurrentState,true,-1);
         }
 
         public void OnStateEnd() {}
@@ -275,6 +307,12 @@ namespace Dummy.StatePattern
         private MoveState moveState;
         private RotateState rotateState;
         private FallState fallState;
+        
+        // UIマネージャーをインスペクターからアタッチ
+        [SerializeField]
+        private StateUIManager stateUIManager;
+
+        [SerializeField] public Text countdownText;
 
         private void Awake()
         {

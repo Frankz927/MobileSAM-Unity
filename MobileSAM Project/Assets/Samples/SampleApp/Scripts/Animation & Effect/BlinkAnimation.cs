@@ -12,7 +12,7 @@ public class BlinkAnimation : MonoBehaviour
     private int currentTextIndex = 0;  // 現在点滅中のテキストのインデックス
     private Tween loopBlinkText;
 
-    public static BlinkAnimation instance;
+    public static BlinkAnimation instance;  
 
     // プロパティで現在のテキストを公開する
     public Text CurrentBlinkingText => blinkTexts[currentTextIndex];
@@ -68,18 +68,33 @@ public class BlinkAnimation : MonoBehaviour
         if (loopBlinkText != null)
         {
             loopBlinkText.Kill();  // 現在の点滅Tweenを停止
-            blinkTexts[currentTextIndex].DOFade(1, 0);
+            blinkTexts[currentTextIndex].DOFade(1, 0.5f);  // 不透明度を元に戻す
         }
     }
 
     // 左右キーでテキストを変更する処理
     private void ChangeText(int direction)
     {
+        // 新しいインデックスを計算
+        int newIndex = currentTextIndex + direction;
+
+        // インデックスが範囲外の場合は何もしない
+        if (newIndex < 0 || newIndex >= blinkTexts.Length)
+        {
+            return;
+        }
+
+        // 現在のテキストインデックスと同じ場合も何もしない
+        if (newIndex == currentTextIndex)
+        {
+            return;
+        }
+
         // 現在の点滅を停止
         KillBlink();
 
-        // インデックスを更新（directionが-1なら左、1なら右に移動）
-        currentTextIndex = (currentTextIndex + direction + blinkTexts.Length) % blinkTexts.Length;
+        // インデックスを更新
+        currentTextIndex = newIndex;
 
         // 新しいテキストで点滅を開始
         TextBlink();

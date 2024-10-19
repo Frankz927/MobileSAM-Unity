@@ -111,7 +111,7 @@ public class WindowsNativePrinter : MonoBehaviour
             pd.DefaultPageSettings.PaperSize = customPaperSize;
 
             // 印刷範囲に画像を描画
-            e.Graphics.DrawImage(bitmap, 0, 0, scaledWidth / 3, scaledHeight);
+            e.Graphics.DrawImage(bitmap, 0, 0, scaledWidth / 3, scaledHeight );
         };
 
         try

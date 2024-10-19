@@ -72,6 +72,7 @@ public class Judgment : MonoBehaviour
     {
         isGameOver = true;
         TowerDownloader.Instance.CaptureScreenshot();
+        StateUIManager.instance.ShowUIForState(StateType.FALL,false, -1);
         
         // Rigidbody2Dの初期の動きを無視するための待機
         await UniTask.Delay(1000);
@@ -80,7 +81,7 @@ public class Judgment : MonoBehaviour
         WindowsNativePrinter.Instance.Init("testdata.png"); // ここで画像パスを設定
         WindowsNativePrinter.Instance.PrintReceipt();
 
-        await UniTask.Delay(1000);
+        await UniTask.Delay(2000);
         SceneManager.LoadScene("Result");
     }
 
