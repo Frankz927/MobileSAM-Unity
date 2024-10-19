@@ -226,7 +226,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stageTransform: {fileID: 1552417373}
   cameraTransform: {fileID: 365972495}
-  interval: 15
 --- !u!4 &344625866
 Transform:
   m_ObjectHideFlags: 0

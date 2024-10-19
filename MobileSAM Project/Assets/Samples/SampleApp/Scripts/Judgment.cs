@@ -4,6 +4,7 @@ using UniRx;
 using Cysharp.Threading.Tasks;
 using Dummy.StatePattern; // UniTask を使用するため
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Judgment : MonoBehaviour
 {
@@ -78,6 +79,9 @@ public class Judgment : MonoBehaviour
         // 画像パスを設定してから印刷
         WindowsNativePrinter.Instance.Init("testdata.png"); // ここで画像パスを設定
         WindowsNativePrinter.Instance.PrintReceipt();
+
+        await UniTask.Delay(1000);
+        SceneManager.LoadScene("Result");
     }
 
     public bool IsStable()

@@ -22,6 +22,7 @@ public class DeviceManager : MonoBehaviour
         if (availableCameras.Length > 0 && index < availableCameras.Length)
         {
             string cameraName = availableCameras[index].name;
+            Debug.Log(cameraName);
             webCamTexture = new WebCamTexture(cameraName, 1920, 1080, 60);
             Segmentation.instance.SetWebCamTexture(webCamTexture);
             webCamTexture.Play();

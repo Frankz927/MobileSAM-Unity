@@ -338,7 +338,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f63678f00f2d4ee46990273d3f105477, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blinkRunText: {fileID: 175297249}
+  blinkTexts:
+  - {fileID: 175297249}
+  - {fileID: 386757466}
   dotweenInterval: 1
 --- !u!1 &804176965
 GameObject:

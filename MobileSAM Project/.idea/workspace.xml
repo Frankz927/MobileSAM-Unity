@@ -2,13 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="66b498f9-e8ce-412a-80ae-71a58f5e414a" name="変更" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.MobileSAM Project/.idea/indexLayout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.MobileSAM Project/.idea/indexLayout.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Samples/SampleApp/Scenes/Result.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Samples/SampleApp/Scenes/Result.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Samples/SampleApp/Scenes/Start.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Samples/SampleApp/Scenes/Start.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Samples/SampleApp/Scripts/BackgroundAnimation.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Samples/SampleApp/Scripts/BackgroundAnimation.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Samples/SampleApp/Scripts/SceneController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Samples/SampleApp/Scripts/SceneController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/BurstAotSettings_StandaloneWindows.json" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/BurstAotSettings_StandaloneWindows.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Samples/SampleApp/Scenes/InGame.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Samples/SampleApp/Scenes/InGame.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Samples/SampleApp/Scenes/SampleApp.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Samples/SampleApp/Scenes/SampleApp.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Samples/SampleApp/Scripts/Segmentation/DeviceManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Samples/SampleApp/Scripts/Segmentation/DeviceManager.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,22 +15,22 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 5
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5
+}</component>
   <component name="ProjectId" id="2ndj4EwLkafGfdbsTkcZCURkIcG" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "feature/Desktop",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/Desktop&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="アプリケーションレベル" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="デフォルトタスク">
@@ -43,6 +40,8 @@
       <option name="presentableId" value="Default" />
       <updated>1729309654076</updated>
       <workItem from="1729309655338" duration="4000" />
+      <workItem from="1729318302640" duration="3000" />
+      <workItem from="1729318325760" duration="17000" />
     </task>
     <servers />
   </component>
