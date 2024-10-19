@@ -127,9 +127,9 @@ public class ObjectManager : MonoBehaviour
         // 新しいリスポーン位置を計算
         if (topmostTransform.transform.position.y >= 7)
         {
-            respawnPosition.y += topmostTransform.transform.localScale.y + interval;
+            respawnPosition.y = topmostTransform.transform.position.y + interval;
             Vector3 cameraPos = cameraTransform.position;
-            cameraPos.y = respawnPosition.y - 8;     
+            cameraPos.y = respawnPosition.y - 5;     
             cameraTransform.position = cameraPos;
         }
         else
