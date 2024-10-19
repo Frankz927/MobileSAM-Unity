@@ -25,7 +25,6 @@ public class Judgment : MonoBehaviour
     {
         Debug.Log("モニタリング開始");
         
-
         // 監視開始までの待機時間
         const int ignoreInitialDelayMilliseconds = 100;
         isMonitoring = true;
@@ -91,8 +90,9 @@ public class Judgment : MonoBehaviour
         {
             foreach (var rb in trackedRigidbodies)
             {
-                if (rb == null || rb.velocity.magnitude > 0)
+                if (rb.velocity.magnitude > 0)
                 {
+                    Debug.Log("まだ動いているよ");
                     return false;
                 }
             }

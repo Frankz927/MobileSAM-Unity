@@ -48,6 +48,7 @@ namespace Sample
         {
             model = new SegmentationModel_MobileSAM(encoder_asset, decoder_asset, BackendType.GPUCompute);
             colors = new List<Color>() { Color.clear, new Color(1.0f, 0.0f, 0.0f, alpha) };
+            Application.quitting += ResetModel;
         }
         
         public void SetWebCamTexture(WebCamTexture webcamTexture)
@@ -193,6 +194,11 @@ namespace Sample
 
             selector?.Dispose();
             selector = null;
+            
+        }
+
+        public void initializeCamera()
+        {
             
         }
     }

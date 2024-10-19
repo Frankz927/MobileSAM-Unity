@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using Sample;
 using UnityEngine;
+using Cysharp.Threading;
+using Cysharp.Threading.Tasks;
 
 public class DeviceManager : MonoBehaviour
 {
@@ -9,11 +11,15 @@ public class DeviceManager : MonoBehaviour
     private WebCamTexture webCamTexture;
     private WebCamDevice[] availableCameras;
 
-    void Start()
+    async void Start()
     {
+        var token = this.GetCancellationTokenOnDestroy();
         // 利用可能なカメラデバイスのリストを取得
         availableCameras = WebCamTexture.devices;
         SelectCamera(selectedCameraIndex);
+        
+        await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Q), cancellationToken: token);
+        SelectCamera(0);
     }
 
     // 選択されたカメラを使用する
