@@ -118,7 +118,7 @@ public class StateUIManager : MonoBehaviour
     /// <summary>
     /// すべてのUIを非表示にする
     /// </summary>
-    private void HideAllUI()
+    public void HideAllUI()
     {
         // すべてのUIを非表示にする
         foreach (var uiElement in stateUIMap.Values)

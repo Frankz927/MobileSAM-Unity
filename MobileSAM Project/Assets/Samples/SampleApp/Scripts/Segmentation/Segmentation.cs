@@ -178,7 +178,6 @@ namespace Sample
             outputTex.Apply();
 
             output_image.texture = outputTex;
-            output_image.color = Color.white;
             
             // Cleanup
             RenderTexture.active = null;

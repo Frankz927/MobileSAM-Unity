@@ -16,7 +16,7 @@ public class ObjectManager : MonoBehaviour
     private Transform originalCameraTransform;
     private float boundaryX;
     private Vector3 respawnPosition;
-    private float interval = 10f;
+    private float interval = 10.5f;
     
     private void Awake()
     {
@@ -51,6 +51,8 @@ public class ObjectManager : MonoBehaviour
             // テクスチャからスプライトを作成
             Sprite sprite = Sprite.Create(texture2D, new Rect(0, 0, texture2D.width, texture2D.height), new Vector2(0.5f, 0.5f));
             renderer.sprite = sprite;
+            
+            renderer.color = Color.white;
 
             // BoxColliderを追加
             PolygonCollider2D boxCollider = obj.AddComponent<PolygonCollider2D>();

@@ -33,6 +33,7 @@ namespace Dummy.StatePattern
     public class SegmentationState : IState
     {
         private float countdownTime = 5.0f;
+        private float displayDuration = 8.0f;
         private IDisposable countdownSubscription;
         private Subject<Unit> countdownCompleteSubject = new Subject<Unit>();
         private IState m_nextState = null;
@@ -56,7 +57,7 @@ namespace Dummy.StatePattern
         public void OnStateBegin()
         {
             // SegmentationStateのUIを8秒間表示
-            StateUIManager.instance.ShowUIForState(GetCurrentState, false, 8f);
+            StateUIManager.instance.ShowUIForState(GetCurrentState, false, displayDuration);
     
             // セグメンテーションを初期化
             Segmentation.instance.ResetModel();
@@ -69,7 +70,7 @@ namespace Dummy.StatePattern
                 .AddTo(StateController.Instance);
 
             // 8秒後にカウントダウンを開始
-            Observable.Timer(TimeSpan.FromSeconds(8))
+            Observable.Timer(TimeSpan.FromSeconds(displayDuration))
                 .Subscribe(_ =>
                 {
                     Debug.Log("UI表示が終了し、カウントダウンを開始");
@@ -107,6 +108,7 @@ namespace Dummy.StatePattern
             // 必要に応じて後処理を行う
             Segmentation.instance.StopCam();
             Segmentation.instance.CancelSegmentation();
+            displayDuration = 0;
         }
 
         public void Update(float deltaTime)
@@ -231,7 +233,10 @@ namespace Dummy.StatePattern
             StateUIManager.instance.ShowUIForState(GetCurrentState,true,-1);
         }
 
-        public void OnStateEnd() {}
+        public void OnStateEnd()
+        {
+            StateUIManager.instance.HideAllUI();
+        }
 
         public void Update(float deltaTime)
         {
