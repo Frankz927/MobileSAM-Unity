@@ -14,6 +14,7 @@ public class TowerDownloader : MonoBehaviour
     private float _orthographicSize;
     private float _originalAspect;
     private Vector3 _mainCameraPosition;
+    public float maxYPosition;
     
     public static TowerDownloader Instance { get; private set; }
     
@@ -31,6 +32,7 @@ public class TowerDownloader : MonoBehaviour
 
     private void Start()
     {
+        maxYPosition = 0;
         _originalCullingMask = mainCamera.cullingMask;
         _originalClearFlags = mainCamera.clearFlags;
         _originalBackgroundColor = mainCamera.backgroundColor;
@@ -70,11 +72,13 @@ public class TowerDownloader : MonoBehaviour
         
         // 固定のアスペクト比を設定 (3500ピクセル x 500ピクセル)
         float fixedWidth = 3500f;
-        float fixedHeight = 500f;
+        float baseHeight = 500f;  // オブジェクト1つのときの縦幅
+        float referenceYPosition = 6f;  // y座標6で500ピクセルに対応
+
 
         // カメラの表示領域 (orthographicSize) を新しい高さに合わせて調整
         float stageYPosition = stage.transform.position.y;
-        float maxYPosition = GetHighestYPosition(validTargetObjects.ToArray());
+        maxYPosition = GetHighestYPosition(validTargetObjects.ToArray());
         float newCameraHeight = (maxYPosition + 10 - stageYPosition);
 
         // カメラの中央を、ステージと最高ブロックの中間点に設定
@@ -86,15 +90,19 @@ public class TowerDownloader : MonoBehaviour
 
         // カメラのorthographicSizeを固定サイズに基づいて設定 (高さを固定比率でスケーリング)
         mainCamera.orthographicSize = newCameraHeight / 2.0f;
+        
+        // 最上部オブジェクトの高さに基づいて縦幅を計算
+        float adjustedHeight = baseHeight + (maxYPosition / referenceYPosition);
+        Debug.Log("adjustedHeight" + adjustedHeight);
 
         // 横幅に合わせたアスペクト比を設定
-        float aspectRatio = fixedWidth / fixedHeight;
+        float aspectRatio = fixedWidth / baseHeight;
         mainCamera.aspect = aspectRatio;
 
         // RenderTexture を固定サイズ (3500x500) に設定
         RenderTexture renderTexture = new RenderTexture(
             Mathf.CeilToInt(fixedWidth),
-            Mathf.CeilToInt(fixedHeight),
+            Mathf.CeilToInt(baseHeight),
             24
         );
         mainCamera.targetTexture = renderTexture;
@@ -138,7 +146,7 @@ public class TowerDownloader : MonoBehaviour
     }
 
     // y座標が最も高いオブジェクトのy座標を取得する関数
-    private float GetHighestYPosition(GameObject[] objects)
+    public float GetHighestYPosition(GameObject[] objects)
     {
         float maxY = float.MinValue;
         foreach (GameObject obj in objects)

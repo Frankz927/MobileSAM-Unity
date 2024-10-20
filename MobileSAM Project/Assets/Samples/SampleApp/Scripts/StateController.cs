@@ -32,8 +32,8 @@ namespace Dummy.StatePattern
     // セグメンテーション状態
     public class SegmentationState : IState
     {
-        private float countdownTime = 5.0f;
-        private float displayDuration = 0f;
+        private float countdownTime = 3.0f;
+        private float displayDuration = 0.0f;
         private IDisposable countdownSubscription;
         private Subject<Unit> countdownCompleteSubject = new Subject<Unit>();
         private IState m_nextState = null;
@@ -65,7 +65,7 @@ namespace Dummy.StatePattern
             Segmentation.instance.input_image.color = Color.white;
     
             // カメラを起動する処理（100ミリ秒遅延）
-            Observable.Timer(TimeSpan.FromMilliseconds(100))
+            Observable.Timer(TimeSpan.FromMilliseconds(50))
                 .Subscribe(_ => Segmentation.instance.StartCam())
                 .AddTo(StateController.Instance);
 
