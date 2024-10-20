@@ -92,7 +92,6 @@ public class Judgment : MonoBehaviour
             {
                 if (rb.velocity.magnitude > 0)
                 {
-                    Debug.Log("まだ動いているよ");
                     return false;
                 }
             }

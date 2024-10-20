@@ -33,7 +33,7 @@ namespace Dummy.StatePattern
     public class SegmentationState : IState
     {
         private float countdownTime = 5.0f;
-        private float displayDuration = 8.0f;
+        private float displayDuration = 0f;
         private IDisposable countdownSubscription;
         private Subject<Unit> countdownCompleteSubject = new Subject<Unit>();
         private IState m_nextState = null;

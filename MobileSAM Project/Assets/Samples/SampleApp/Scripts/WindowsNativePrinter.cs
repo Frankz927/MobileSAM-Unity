@@ -99,10 +99,10 @@ public class WindowsNativePrinter : MonoBehaviour
             float labelWidthInPixels = labelWidthInMM * dpiX / 25.4f;  // mmからピクセルへの変換 (25.4mm = 1 inch)
 
             // 画像の比率を保持しながら、横幅がラベル幅に収まるようにスケーリング
-            float scaleFactor = labelWidthInPixels / bitmap.Width;
-            float scaledHeight = bitmap.Height * scaleFactor;
-            float scaledWidth = labelWidthInPixels;
-
+            float scaleFactor = (labelWidthInPixels / bitmap.Width)  * 1.5f;
+            float scaledHeight = bitmap.Height * scaleFactor　;
+            float scaledWidth = (labelWidthInPixels);
+            
             bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
 
             // レシートの長さを調整 (高さに合わせる)
@@ -111,7 +111,7 @@ public class WindowsNativePrinter : MonoBehaviour
             pd.DefaultPageSettings.PaperSize = customPaperSize;
 
             // 印刷範囲に画像を描画
-            e.Graphics.DrawImage(bitmap, 0, 0, scaledWidth / 3, scaledHeight );
+            e.Graphics.DrawImage(bitmap, -250, 0, scaledWidth, scaledHeight );
         };
 
         try
@@ -132,6 +132,6 @@ public class WindowsNativePrinter : MonoBehaviour
     private void Start()
     {
         Init("testdata.png"); // 初期画像パスを設定
-        //PrintReceipt();
+        PrintReceipt();
     }
 }

@@ -67,15 +67,15 @@ public class TowerDownloader : MonoBehaviour
             obj.layer = screenshotLayer;
         }
         mainCamera.cullingMask = 1 << screenshotLayer;
+        
+        // 固定のアスペクト比を設定 (3500ピクセル x 500ピクセル)
+        float fixedWidth = 3500f;
+        float fixedHeight = 500f;
 
-        // ステージの y 座標を取得
+        // カメラの表示領域 (orthographicSize) を新しい高さに合わせて調整
         float stageYPosition = stage.transform.position.y;
-
-        // 有効なターゲットオブジェクトの中で最も高い y 座標を取得
         float maxYPosition = GetHighestYPosition(validTargetObjects.ToArray());
-
-        // ステージの y 座標と最も高い y 座標の距離をカメラの高さとする
-        float newCameraHeight = (maxYPosition + 10 - stageYPosition);;
+        float newCameraHeight = (maxYPosition + 10 - stageYPosition);
 
         // カメラの中央を、ステージと最高ブロックの中間点に設定
         mainCamera.transform.position = new Vector3(
@@ -84,23 +84,17 @@ public class TowerDownloader : MonoBehaviour
             mainCamera.transform.position.z
         );
 
-        // カメラの表示領域 (orthographicSize) を設定
+        // カメラのorthographicSizeを固定サイズに基づいて設定 (高さを固定比率でスケーリング)
         mainCamera.orthographicSize = newCameraHeight / 2.0f;
-        
-        // 横幅を DebugBar の長さに合わせる
-        float stageWidth = stage.GetComponent<Renderer>().bounds.size.x + 5;
-        Debug.Log(stageWidth);
-        float aspectRatio = stageWidth / (newCameraHeight);
+
+        // 横幅に合わせたアスペクト比を設定
+        float aspectRatio = fixedWidth / fixedHeight;
         mainCamera.aspect = aspectRatio;
 
-        // 透明な背景の設定
-        mainCamera.clearFlags = CameraClearFlags.SolidColor;
-        mainCamera.backgroundColor = new Color(0, 0, 0, 0);  // アルファ値 0 の透明色
-
-        // RenderTexture を画面サイズに設定　
+        // RenderTexture を固定サイズ (3500x500) に設定
         RenderTexture renderTexture = new RenderTexture(
-            Mathf.CeilToInt(stageWidth * 100),  // 横幅を DebugBar の横幅に調整
-            Screen.height + 100,
+            Mathf.CeilToInt(fixedWidth),
+            Mathf.CeilToInt(fixedHeight),
             24
         );
         mainCamera.targetTexture = renderTexture;
@@ -112,11 +106,20 @@ public class TowerDownloader : MonoBehaviour
         screenShot.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
         screenShot.Apply();
 
+        // PNGとして保存
+#if UNITY_EDITOR
+        string path = Directory.GetCurrentDirectory();
+#else
+        string path = Application.persistentDataPath;
+#endif
+        File.WriteAllBytes(path+"/testdata.png", screenShot.EncodeToPNG());
+        
+        
         // カメラとレンダーテクスチャの設定を解除
         mainCamera.targetTexture = null;
         RenderTexture.active = null;
         Destroy(renderTexture);
-        
+            
         // カメラの設定を元に戻す
         mainCamera.cullingMask = _originalCullingMask;
         mainCamera.clearFlags = _originalClearFlags;
@@ -124,14 +127,6 @@ public class TowerDownloader : MonoBehaviour
         mainCamera.transform.position = _mainCameraPosition;
         mainCamera.orthographicSize = _orthographicSize;
         mainCamera.aspect = _originalAspect;
-
-        // PNG形式のバイトデータとして保存
-        #if UNITY_EDITOR
-            string path = Directory.GetCurrentDirectory();
-        #else
-            string path = Application.persistentDataPath;
-        #endif
-            File.WriteAllBytes(path+"/testdata" + ".png", screenShot.EncodeToPNG());
         
         // オブジェクトのレイヤーを元に戻す
         foreach (GameObject obj in validTargetObjects)
