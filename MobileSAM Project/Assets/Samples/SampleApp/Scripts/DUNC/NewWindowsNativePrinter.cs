@@ -10,7 +10,15 @@ public class NewWindowsNativePrinter : MonoBehaviour
     public static NewWindowsNativePrinter Instance;
     private string _imagePath;
     private string _printerName = "Brother QL-700";
-    
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+    }
+
     public void Init(string imagePath)
     {
         _imagePath = imagePath;
@@ -18,7 +26,7 @@ public class NewWindowsNativePrinter : MonoBehaviour
     
     private void Start()
     {
-        PrintReceipt();
+        //PrintReceipt();
     }
     
     private Bitmap LoadImage(string filePath)
@@ -70,8 +78,8 @@ public class NewWindowsNativePrinter : MonoBehaviour
                 
                 bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
 
-                e.Graphics.DrawImage(bitmap, new Rectangle(0,currentY,bitmap.Width / 3,bitmap.Height/3));
-                currentY += bitmap.Height/3;
+                e.Graphics.DrawImage(bitmap, new Rectangle(0,currentY,bitmap.Width / 9,bitmap.Height/9));
+                currentY += bitmap.Height/9;
 
                 bitmap.Dispose();
             }
@@ -79,7 +87,7 @@ public class NewWindowsNativePrinter : MonoBehaviour
 
         try
         {
-            //pd.Print();
+            pd.Print();
             Debug.Log("印刷が完了しました。");
         }
         catch (Exception ex)

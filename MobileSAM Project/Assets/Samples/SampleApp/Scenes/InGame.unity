@@ -522,6 +522,8 @@ GameObject:
   - component: {fileID: 344625869}
   - component: {fileID: 344625870}
   - component: {fileID: 344625871}
+  - component: {fileID: 344625873}
+  - component: {fileID: 344625872}
   m_Layer: 0
   m_Name: GameController
   m_TagString: Untagged
@@ -590,7 +592,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 344625864}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1f7d92e6176a7fe459f3398cb14cf3ad, type: 3}
   m_Name: 
@@ -598,6 +600,7 @@ MonoBehaviour:
   mainCamera: {fileID: 365972494}
   stage: {fileID: 1552417369}
   screenshotFilePath: 
+  maxYPosition: 0
 --- !u!114 &344625870
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -605,7 +608,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 344625864}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d46163cf59e25214c9cfc407cd279401, type: 3}
   m_Name: 
@@ -633,6 +636,32 @@ MonoBehaviour:
     associatedUI: {fileID: 1808715017}
   - stateType: 4
     associatedUI: {fileID: 858442776}
+--- !u!114 &344625872
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 344625864}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b694e499d4901c488721638ec77a316, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &344625873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 344625864}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5290a79ade05be943a14419d2bdf8e4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainCamera: {fileID: 365972494}
+  stage: {fileID: 1552417369}
 --- !u!1 &365972492
 GameObject:
   m_ObjectHideFlags: 0

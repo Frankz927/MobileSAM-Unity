@@ -78,7 +78,7 @@ public class Judgment : MonoBehaviour
     
         // 画像パスを設定してから印刷
         NewWindowsNativePrinter.Instance.Init("testdata.png"); // ここで画像パスを設定
-        //NewWindowsNativePrinter.Instance.PrintReceipt();
+        NewWindowsNativePrinter.Instance.PrintReceipt();
 
         await UniTask.Delay(2000);
         SceneManager.LoadScene("Result");
